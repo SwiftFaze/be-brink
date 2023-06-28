@@ -1,0 +1,124 @@
+{
+  "formDtoList": [
+    {
+      "formTypeCode": "DFLT",
+      "formFieldList": [
+        {
+          "attribute": "title",
+          "label": "Titre",
+          "editable": true,
+          "creatable": true,
+          "required": true,
+          "obligatory": true,
+          "formType": "text",
+          "dataType": "default",
+          "value": ""
+        },
+        {
+          "attribute": "type",
+          "label": "Catégorie",
+          "editable": false,
+          "creatable": true,
+          "required": false,
+          "obligatory": true,
+          "formType": "select",
+          "dataType": "default",
+          "value": ""
+        },
+        {
+          "attribute": "caseNumber",
+          "label": "Numero d'affaire",
+          "editable": true,
+          "creatable": true,
+          "required": false,
+          "obligatory": false,
+          "formType": "text",
+          "dataType": "default",
+          "value": ""
+        },
+        {
+          "attribute": "status",
+          "label": "Statut",
+          "editable": false,
+          "creatable": false,
+          "formType": "text",
+          "dataType": "default"
+        },
+        {
+          "attribute": "building",
+          "label": "Batiment",
+          "editable": true,
+          "creatable": true,
+          "required": false,
+          "obligatory": false,
+          "formType": "text",
+          "dataType": "default",
+          "value": ""
+        },
+        {
+          "attribute": "level",
+          "label": "Etage",
+          "editable": true,
+          "creatable": true,
+          "required": false,
+          "obligatory": false,
+          "formType": "text",
+          "dataType": "default",
+          "value": ""
+        },
+        {
+          "attribute": "zone",
+          "label": "Zone",
+          "editable": true,
+          "creatable": true,
+          "required": false,
+          "obligatory": false,
+          "formType": "text",
+          "dataType": "default",
+          "value": ""
+        },
+        {
+          "attribute": "object",
+          "label": "Objet",
+          "editable": true,
+          "creatable": true,
+          "required": false,
+          "obligatory": false,
+          "formType": "text",
+          "dataType": "default",
+          "value": ""
+        },
+        {
+          "attribute": "owner",
+          "label": "Rédacteur",
+          "editable": false,
+          "creatable": false,
+          "required": false,
+          "obligatory": false,
+          "formType": "select",
+          "dataType": "author"
+        },
+        {
+          "attribute": "createdDate",
+          "label": "Date de création",
+          "editable": false,
+          "creatable": false,
+          "required": false,
+          "obligatory": false,
+          "formType": "date",
+          "dataType": "date"
+        },
+        {
+          "attribute": "updatedDate",
+          "label": "Date de modification",
+          "editable": false,
+          "creatable": false,
+          "required": false,
+          "obligatory": false,
+          "formType": "date",
+          "dataType": "date"
+        }
+      ]
+    }
+  ]
+}
