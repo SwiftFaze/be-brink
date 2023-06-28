@@ -12,5 +12,4 @@ public class BeBrinkApplication extends SpringBootServletInitializer {
         SpringApplication.run(BeBrinkApplication.class, args);
 
     }
-
 }
