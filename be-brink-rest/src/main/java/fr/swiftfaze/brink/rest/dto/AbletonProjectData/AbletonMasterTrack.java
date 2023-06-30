@@ -15,7 +15,10 @@ public class AbletonMasterTrack implements IAbletonTrack {
 
     @XmlElement(name = "Name")
     private AbletonTrackName name;
-
+    @XmlElement(name = "TrackGroupId")
+    private AbletonIntValue groupId;
+    @XmlElement(name = "DeviceChain")
+    private AbletonDeviceChain deviceChain;
 
     @Override
     public int getId() {
@@ -38,12 +41,31 @@ public class AbletonMasterTrack implements IAbletonTrack {
     }
 
     @Override
-    public AbletonTrackName getTrackName() {
+    public AbletonTrackName getName() {
         return name;
     }
 
     @Override
-    public void setTrackName(AbletonTrackName name) {
+    public void setName(AbletonTrackName name) {
         this.name = name;
+    }
+
+    @Override
+    public int getGroupId() {
+        return groupId.getValue();
+    }
+
+    @Override
+    public void setGroupId(AbletonIntValue groupId) {
+        this.groupId = groupId;
+    }
+    @Override
+    public AbletonDeviceChain getDeviceChain() {
+        return deviceChain;
+    }
+
+    @Override
+    public void setDeviceChain(AbletonDeviceChain deviceChain) {
+        this.deviceChain = deviceChain;
     }
 }

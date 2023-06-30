@@ -2,10 +2,13 @@ package fr.swiftfaze.brink.rest.dto.AbletonProjectData;
 
 import fr.swiftfaze.brink.business.model.IAbletonTrack;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AbletonGroupTrack implements IAbletonTrack {
+public class AbletonReturnTrack implements IAbletonTrack {
 
     @XmlAttribute(name = "Id")
     private int id;
@@ -15,11 +18,11 @@ public class AbletonGroupTrack implements IAbletonTrack {
 
     @XmlElement(name = "Name")
     private AbletonTrackName name;
-
     @XmlElement(name = "TrackGroupId")
     private AbletonIntValue groupId;
     @XmlElement(name = "DeviceChain")
     private AbletonDeviceChain deviceChain;
+
     @Override
     public int getId() {
         return id;

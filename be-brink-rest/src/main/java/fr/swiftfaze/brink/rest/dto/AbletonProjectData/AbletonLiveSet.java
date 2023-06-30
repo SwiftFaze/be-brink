@@ -15,9 +15,6 @@ public class AbletonLiveSet {
     @XmlElement(name = "MasterTrack")
     private AbletonMasterTrack masterTrack;
 
-    @XmlElement(name = "PreHearTrack")
-    private AbletonPreHearTrack preHearTrack;
-
 
     public AbletonTracks getTracks() {
         return tracks;
@@ -35,12 +32,5 @@ public class AbletonLiveSet {
         this.masterTrack = masterTrack;
     }
 
-    public AbletonPreHearTrack getAbletonPreHearTrack() {
-        return preHearTrack;
-    }
-
-    public void setAbletonPreHearTrack(AbletonPreHearTrack preHearTrack) {
-        this.preHearTrack = preHearTrack;
-    }
 
 }
