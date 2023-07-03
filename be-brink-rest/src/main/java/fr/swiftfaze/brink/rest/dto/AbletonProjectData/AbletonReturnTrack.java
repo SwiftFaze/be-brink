@@ -71,4 +71,5 @@ public class AbletonReturnTrack implements IAbletonTrack {
     public void setDeviceChain(AbletonDeviceChain deviceChain) {
         this.deviceChain = deviceChain;
     }
+
 }

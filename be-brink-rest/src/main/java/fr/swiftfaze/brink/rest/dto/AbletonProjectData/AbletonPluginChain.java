@@ -23,9 +23,7 @@ public class AbletonPluginChain {
         return pluginList;
     }
 
-    public void setPluginList(List<AbletonPluginList> groupTrackList) {
+    public void setPluginList(List<AbletonPluginList> pluginList) {
         this.pluginList = pluginList;
     }
-
-
 }

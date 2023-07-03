@@ -1,6 +1,9 @@
 package fr.swiftfaze.brink.rest.dto.AbletonProjectData;
 
+import fr.swiftfaze.brink.commons.typologies.factory.AbletonPluginHandler;
+
 import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,33 +11,22 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AbletonPluginList {
 
-    private AbletonPluginList() {
-        this.externalPluginList = new ArrayList<>();
-        this.m4lPluginList = new ArrayList<>();
+    public AbletonPluginList() {
+        this.pluginList = new ArrayList<>();
     }
 
+    @XmlAnyElement(lax = true)
+    @XmlJavaTypeAdapter(AbletonPluginHandler.class)
+    private List<AbletonPlugin> pluginList;
 
-    @XmlElement(name = "PluginDevice")
-    private List<AbletonExternalPlugin> externalPluginList;
 
-    @XmlElement(name = "MxDeviceAudioEffect")
-    private List<AbletonM4lPlugin> m4lPluginList;
 
-    public List<AbletonExternalPlugin> getExternalPluginList() {
-        return externalPluginList;
+
+    public List<AbletonPlugin> getPluginList() {
+        return pluginList;
     }
 
-    public void setExternalPluginList(List<AbletonExternalPlugin> externalPluginList) {
-        this.externalPluginList = externalPluginList;
+    public void setPluginList(List<AbletonPlugin> pluginList) {
+        this.pluginList = pluginList;
     }
-
-    public List<AbletonM4lPlugin> getM4lPluginList() {
-        return m4lPluginList;
-    }
-
-    public void setM4lPluginList(List<AbletonM4lPlugin> m4lPluginList) {
-        this.m4lPluginList = m4lPluginList;
-    }
-
-
 }

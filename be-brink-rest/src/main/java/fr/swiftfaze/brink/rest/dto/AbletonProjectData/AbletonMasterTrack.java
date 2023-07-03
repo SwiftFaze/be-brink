@@ -68,4 +68,5 @@ public class AbletonMasterTrack implements IAbletonTrack {
     public void setDeviceChain(AbletonDeviceChain deviceChain) {
         this.deviceChain = deviceChain;
     }
+
 }

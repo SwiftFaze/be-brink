@@ -20,6 +20,7 @@ public class AbletonGroupTrack implements IAbletonTrack {
     private AbletonIntValue groupId;
     @XmlElement(name = "DeviceChain")
     private AbletonDeviceChain deviceChain;
+
     @Override
     public int getId() {
         return id;
@@ -68,4 +69,6 @@ public class AbletonGroupTrack implements IAbletonTrack {
     public void setDeviceChain(AbletonDeviceChain deviceChain) {
         this.deviceChain = deviceChain;
     }
+
+
 }

@@ -4,11 +4,21 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 import java.util.List;
 
 @XmlRootElement(name = "Tracks")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AbletonTracks {
+
+    private AbletonTracks() {
+        this.audioTrackList = new ArrayList<>();
+        this.midiTrackList = new ArrayList<>();
+        this.groupTrackList = new ArrayList<>();
+        this.returnTrackList = new ArrayList<>();
+    }
+
+
     @XmlElement(name = "AudioTrack")
     private List<AbletonAudioTrack> audioTrackList;
 

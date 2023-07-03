@@ -20,6 +20,9 @@ public class AbletonMidiTrack implements IAbletonTrack {
     @XmlElement(name = "DeviceChain")
     private AbletonDeviceChain deviceChain;
 
+    @XmlElement(name = "Freeze")
+    private AbletonBooleanValue isFrozen;
+
     @Override
     public int getId() {
         return id;
@@ -68,4 +71,14 @@ public class AbletonMidiTrack implements IAbletonTrack {
     public void setDeviceChain(AbletonDeviceChain deviceChain) {
         this.deviceChain = deviceChain;
     }
+
+    public Boolean getFrozen() {
+        return isFrozen.getValue();
+    }
+
+    public void setFrozen(AbletonBooleanValue frozen) {
+        this.isFrozen = frozen;
+    }
+
+
 }

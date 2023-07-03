@@ -1,6 +1,7 @@
 package fr.swiftfaze.brink.business.model;
 
 
+import fr.swiftfaze.brink.rest.dto.AbletonProjectData.AbletonBooleanValue;
 import fr.swiftfaze.brink.rest.dto.AbletonProjectData.AbletonDeviceChain;
 import fr.swiftfaze.brink.rest.dto.AbletonProjectData.AbletonIntValue;
 import fr.swiftfaze.brink.rest.dto.AbletonProjectData.AbletonTrackName;
@@ -26,6 +27,5 @@ public interface IAbletonTrack {
     AbletonDeviceChain getDeviceChain();
 
     void setDeviceChain(AbletonDeviceChain deviceChain);
-
 
 }
