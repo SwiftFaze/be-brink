@@ -23,8 +23,17 @@ public class AbletonPluginHandler extends XmlAdapter<Element, AbletonPlugin> {
             case AbletonPlugin.EXTERNAL_PLUGIN: {
 
                 abletonPlugin.setType("External Plugin");
-                setPaths(xml, abletonPlugin, 0);
-                abletonPlugin.setDisplayName(this.createDisplayName(abletonPlugin.getRelativePath()));
+
+                Element pathNameElement = (Element) xml.getElementsByTagName("Path").item(0);
+                String pathName = pathNameElement.getAttribute("Value");
+                abletonPlugin.setPath(pathName);
+                abletonPlugin.setRelativePath(pathName);
+
+                Element displayNameElement = (Element) xml.getElementsByTagName("PlugName").item(0);
+                String displayName = displayNameElement.getAttribute("Value");
+                abletonPlugin.setDisplayName(displayName);
+
+                setPluginChildren(abletonPlugin, xml);
                 break;
             }
             case AbletonPlugin.ABLETON_INSTRUMENT: {
@@ -83,10 +92,11 @@ public class AbletonPluginHandler extends XmlAdapter<Element, AbletonPlugin> {
 
 
         int id = Integer.parseInt(xml.getAttribute("Id"));
-
-
         abletonPlugin.setId(id);
 
+        Element lomIdElement = (Element) xml.getElementsByTagName("LomId").item(0);
+        int lomId = Integer.parseInt(lomIdElement.getAttribute("Value"));
+        abletonPlugin.setId(lomId);
 
         return abletonPlugin;
     }

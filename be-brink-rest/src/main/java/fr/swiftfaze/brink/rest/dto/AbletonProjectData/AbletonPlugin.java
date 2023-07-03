@@ -16,6 +16,7 @@ public class AbletonPlugin {
     }
 
     private int id;
+    private int lomId;
     private String type;
     private String displayName;
     private String path;
@@ -32,6 +33,13 @@ public class AbletonPlugin {
         this.id = id;
     }
 
+    public int getLomId() {
+        return lomId;
+    }
+
+    public void setLomId(int lomId) {
+        this.lomId = lomId;
+    }
 
     public String getPath() {
         return path;
