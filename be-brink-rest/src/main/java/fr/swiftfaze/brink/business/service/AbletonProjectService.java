@@ -1,5 +1,6 @@
 package fr.swiftfaze.brink.business.service;
 
+import fr.swiftfaze.brink.business.model.AbletonFileData;
 import fr.swiftfaze.brink.rest.dto.AbletonProjectDto;
 import org.eclipse.jgit.api.Git;
 import org.slf4j.Logger;
@@ -10,14 +11,10 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class AbletonProjectService {
@@ -39,46 +36,57 @@ public class AbletonProjectService {
 
 
     public void uploadSession(List<MultipartFile> multipartFiles) throws Exception {
-
-        List<File> fileList = this.convertMultipartFilesToFiles(multipartFiles);
-
-        for (File file : fileList) {
-            String path = "/home/git/brink/users/admin/projects/demo-project/" + file.getName();
-            this.gitService.sendFileToGitServer(file, path);
+        System.out.println("Files recieved - " + multipartFiles.size());
+        List<AbletonFileData> fileList = this.convertMultipartFilesToFiles(multipartFiles);
+        System.out.println("Files successfully converted");
+        for (AbletonFileData abletonFileData : fileList) {
+            String path = "/home/git/brink/users/admin/projects/" + abletonFileData.getPath();
+            this.gitService.sendFileToGitServer(abletonFileData.getFile(), path);
         }
-
+        System.out.println("Completed");
     }
 
-    private List<File> convertMultipartFilesToFiles(List<MultipartFile> multipartFiles) throws Exception {
-        List<File> fileList = new ArrayList<>();
+    private List<AbletonFileData> convertMultipartFilesToFiles(List<MultipartFile> multipartFiles) throws Exception {
+        List<AbletonFileData> abletonFileList = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
-            System.out.println("Uploaded Filename: " + multipartFile.getOriginalFilename());
+
             String filePath = multipartFile.getOriginalFilename();
 
             assert filePath != null;
             String extension = this.getFileExtension(filePath);
             String fileName = this.getFilename(filePath);
             String dir = this.getFileDir(filePath);
+            dir = dir.replace(" ", "\\ ");
+            String path = dir + fileName;
 
 
-            this.gitService.runGitServerCommand("mkdir -p /home/git/brink/users/admin/projects/demo-project/" + dir);
+            this.gitService.runGitServerCommand("mkdir -p /home/git/brink/users/admin/projects/" + dir);
 
-            File file = File.createTempFile(fileName, extension);
-            multipartFile.transferTo(file);
-            fileList.add(file);
+
+            AbletonFileData abletonFileData = new AbletonFileData();
+
+            try {
+                File file = File.createTempFile(dir + fileName, extension);
+
+                abletonFileData.setFile(file);
+                abletonFileData.setDirectory(dir);
+                abletonFileData.setName(fileName);
+                abletonFileData.setPath(path);
+                abletonFileList.add(abletonFileData);
+
+                multipartFile.transferTo(file);
+                file.deleteOnExit();
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
         }
-        return fileList;
+        return abletonFileList;
     }
 
-
-    public void processUploadedFilenames(MultipartHttpServletRequest multipartRequest) {
-        Iterator<String> iterator = multipartRequest.getFileNames();
-
-        while (iterator.hasNext()) {
-            String uploadedFileName = iterator.next();
-            System.out.println("Uploaded Filename: " + uploadedFileName);
-        }
-    }
 
     private String getFileExtension(String filename) {
         int extensionIndex = filename.lastIndexOf(".");
@@ -91,16 +99,33 @@ public class AbletonProjectService {
     private String getFileDir(String path) {
         int extensionIndex = path.lastIndexOf("/");
         if (extensionIndex != -1) {
-            return path.substring(0, extensionIndex).replace(" Project/", "/");
+            return path.substring(0, extensionIndex) + "/";
         }
         return path;
     }
 
     private String getFilename(String filename) {
-        int extensionIndex = filename.lastIndexOf(".");
+        int extensionIndex = filename.lastIndexOf("/");
         if (extensionIndex != -1) {
-            return filename.substring(0, extensionIndex);
+            return filename.substring(extensionIndex + 1);
         }
         return filename;
+    }
+
+
+    public List<String> getUserProjectList() throws Exception {
+        List<String> projectNameList = new ArrayList<>();
+        String response = this.gitService.runGitServerCommand("ls /home/git/brink/users/admin/projects/");
+
+        while (response.contains("\n")) {
+            int extensionIndex = response.lastIndexOf("\n");
+            projectNameList.add(response.substring(extensionIndex));
+            response = response.substring(0, extensionIndex);
+        }
+        projectNameList.add(response);
+        projectNameList.remove(0);
+        return projectNameList;
+
+
     }
 }

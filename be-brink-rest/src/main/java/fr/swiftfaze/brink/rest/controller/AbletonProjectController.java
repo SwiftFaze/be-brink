@@ -52,45 +52,28 @@ public class AbletonProjectController {
     }
 
 
-//    @PostMapping("/v1/upload")
-//    public ResponseEntity<Void> uploadSession(@RequestParam("file") MultipartFile[] files) throws Exception {
-//        logger.info("POST Upload Ableton Project");
-//
-//        if (files == null || files.length == 0) {
-//            // Handle empty files error
-//            return ResponseEntity.badRequest().build();
-//        }
-//
-//        abletonProjectService.uploadSession(files);
-//
-//
-//        String destinationFolder = "~/projects/ableton_test";
-//
-//        return new ResponseEntity<>(new HttpHeaders(), HttpStatus.OK);
-//    }
-
     @PostMapping("/v1/upload")
     public ResponseEntity<String> uploadFiles(MultipartHttpServletRequest request) {
         try {
             MultiValueMap<String, MultipartFile> multipartFilesMap = request.getMultiFileMap();
-
             for (Map.Entry<String, List<MultipartFile>> entry : multipartFilesMap.entrySet()) {
-                String key = entry.getKey();
                 List<MultipartFile> multipartFiles = entry.getValue();
-
                 abletonProjectService.uploadSession(multipartFiles);
-//                for (MultipartFile multipartFile : multipartFiles) {
-//                    // Perform your desired operations on each file
-//                    // For example, you can access the file's properties using methods like getOriginalFilename(), getSize(), etc.
-//                    System.out.println("Key: " + key);
-//                    System.out.println("Uploaded Filename: " + multipartFile.getOriginalFilename());
-//                }
             }
-
             return ResponseEntity.ok("Files uploaded successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during file upload.");
         }
     }
+
+
+    @GetMapping("/v1/projects")
+    public ResponseEntity<List<String>> getProjects() throws Exception {
+
+        List<String> projectNameList = abletonProjectService.getUserProjectList();
+
+        return new ResponseEntity<>(projectNameList, new HttpHeaders(), HttpStatus.OK);
+    }
+
 
 }

@@ -64,11 +64,11 @@ public class GitService {
     }
 
 
-    public void runGitServerCommand(String command) throws Exception {
+    public String runGitServerCommand(String command) throws Exception {
 
         Session session = null;
         ChannelExec channel = null;
-
+        String response;
         try {
             session = new JSch().getSession(USERNAME, HOST, PORT);
             session.setPassword(PASSWORD);
@@ -81,9 +81,12 @@ public class GitService {
             channel.setOutputStream(responseStream);
             channel.connect();
 
+            // Wait for response to be sent back
+            while (!channel.isClosed()) {
+                Thread.sleep(100);
+            }
 
-            String responseString = responseStream.toString();
-            System.out.println(responseString);
+            response = responseStream.toString();
         } finally {
             if (session != null) {
                 session.disconnect();
@@ -92,6 +95,7 @@ public class GitService {
                 channel.disconnect();
             }
         }
+        return response;
     }
 
     public void sendFileToGitServer(File file, String remoteFilePath) throws Exception {
@@ -111,7 +115,7 @@ public class GitService {
             sftpChannel.put(new FileInputStream(file), remoteFilePath);
 
 
-            System.out.println("File uploaded");
+            System.out.println("File uploaded - " + remoteFilePath);
         } finally {
             if (sftpChannel != null) {
                 sftpChannel.disconnect();
