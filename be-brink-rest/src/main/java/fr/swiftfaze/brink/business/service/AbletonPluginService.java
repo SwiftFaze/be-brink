@@ -12,7 +12,7 @@ public class AbletonPluginService {
     private static final Logger logger = LoggerFactory.getLogger(AbletonPluginService.class);
     private final XmlService xmlService = new XmlService();
 
-    public AbletonPluginList convert2AbletonNativePluginList(String xml) {
+    public AbletonPluginList convert2AbletonNativePluginList(String xml) throws Exception {
         return this.xmlService.convertXml2Object(xml, AbletonPluginList.class);
     }
 

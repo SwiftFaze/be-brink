@@ -1,5 +1,6 @@
 package fr.swiftfaze.brink.business.service;
 
+import fr.swiftfaze.brink.exception.BrinkInternalErrors;
 import fr.swiftfaze.brink.rest.dto.AbletonProjectDto;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
@@ -19,15 +20,14 @@ import java.io.StringWriter;
 @Service
 public class XmlService {
 
-    public <T> T convertXml2Object(String abletonXmlProjectFile, Class<T> conversionClass) {
+    public <T> T convertXml2Object(String abletonXmlProjectFile, Class<T> conversionClass) throws Exception {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(conversionClass);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             return conversionClass.cast(jaxbUnmarshaller.unmarshal(new StringReader(abletonXmlProjectFile)));
         } catch (JAXBException e) {
-            e.printStackTrace();
+            throw new Exception(BrinkInternalErrors.XML_CONVERSION);
         }
-        return null;
     }
 
 

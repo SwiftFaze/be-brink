@@ -6,6 +6,7 @@ public class AbletonFileData {
 
     private File file;
     private String path;
+    private String originalFilePath;
     private String directory;
     private String name;
     private String extension;
@@ -48,5 +49,13 @@ public class AbletonFileData {
 
     public void setExtension(String extension) {
         this.extension = extension;
+    }
+
+    public String getOriginalFilePath() {
+        return originalFilePath;
+    }
+
+    public void setOriginalFilePath(String originalFilePath) {
+        this.originalFilePath = originalFilePath;
     }
 }

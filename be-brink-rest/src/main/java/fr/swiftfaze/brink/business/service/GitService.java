@@ -3,15 +3,18 @@ package fr.swiftfaze.brink.business.service;
 import com.jcraft.jsch.*;
 import fr.swiftfaze.brink.business.model.AbletonFileData;
 import fr.swiftfaze.brink.exception.BrinkInternalErrors;
-import org.eclipse.jgit.api.Git;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class GitService {
@@ -20,6 +23,7 @@ public class GitService {
     private static final String REPO_LOCATION = "~/projects/ableton_test.git";
     private static final String REMOTE_URL = "git@192.168.1.29:~/projects/ableton_test.git";
 
+    // TODO MOVE TO ENVIRONMENT VARIABLES
     private static final String HOST = "192.168.1.29";
     private static final int PORT = 22;
     private static final String USERNAME = "git";
@@ -27,7 +31,7 @@ public class GitService {
     private static final String GIT_ROOT_REPO = "/home/git/brink/";
     private static final String GIT_USER_REPO = GIT_ROOT_REPO + "users/";
     private static final String GIT_ADMIN_USER_REPO = GIT_USER_REPO + "admin/";
-    private static final String GIT_PROJECT_REPO = "projects/";
+    private static final String GIT_PROJECTS_REPO = GIT_ADMIN_USER_REPO + "projects/";
     private static final String TEMP_FILE_PATH = "demo-project.als";
 
     private final FileService fileService;
@@ -37,23 +41,10 @@ public class GitService {
     }
 
 
-
-
-    public Git initRepository(String repoPath, String abletonXmlProjectFile) throws Exception {
-
-        String newSessionPath = GIT_ADMIN_USER_REPO + GIT_PROJECT_REPO + "demo-project/";
-        runGitServerCommand("git init " + newSessionPath);
-        runGitServerCommand("ls -la " + newSessionPath);
-        try {
-            FileWriter writer = new FileWriter(TEMP_FILE_PATH);
-            writer.write(abletonXmlProjectFile);
-            writer.close();
-            System.out.println("Java file created successfully.");
-        } catch (IOException e) {
-            throw new Exception(BrinkInternalErrors.FILE_CREATION);
-        }
-
-        return null;
+    public void initRepository(String path) throws Exception {
+        init(path);
+        add(path);
+        commit("init", path);
     }
 
 
@@ -110,7 +101,8 @@ public class GitService {
             sftpChannel.put(new FileInputStream(file), remoteFilePath);
 
 
-            System.out.println("File uploaded - " + remoteFilePath);
+        } catch (Exception e) {
+            throw new Exception(BrinkInternalErrors.FILE_TRANSFER);
         } finally {
             if (sftpChannel != null) {
                 sftpChannel.disconnect();
@@ -121,7 +113,7 @@ public class GitService {
         }
     }
 
-    public void stuff() {
+//    public void stuff() {
 //                        Repository newlyCreatedRepo = FileRepositoryBuilder.create(
 //                    new File("/tmp/new_repo/.git"));
 //            newlyCreatedRepo.create();
@@ -146,7 +138,7 @@ public class GitService {
 //
 
 
-    }
+//    }
 
 
 //    public void pushAbletonProject(Git git, String repoPath, String fileContents) {
@@ -186,59 +178,82 @@ public class GitService {
 //        }
 //    }
 
-    public List<AbletonFileData> convertMultipartFilesToFiles(List<MultipartFile> multipartFiles) throws Exception {
+
+    public void commit(String commitMessage, String path) throws Exception {
+        System.out.println("git -C " + path + "commit -m \"" + commitMessage + "\" --all ");
+        System.out.println(runGitServerCommand("git -C " + path + " commit -m \"" + commitMessage + "\" --all "));
+    }
+
+    public void add(String path) throws Exception {
+        System.out.println("git -C " + path + "add .");
+        System.out.println(runGitServerCommand("git -C " + path + " add ."));
+    }
+    public void init(String path) throws Exception {
+        System.out.println(runGitServerCommand("git init " + path));
+    }
+
+
+    public AbletonFileData convertMultipartFile2AbletonFileData(MultipartFile multipartFile) throws Exception {
         // TODO MOVE THIS TO FILESERVICE
+        return createAbletonFileData(multipartFile);
+    }
 
-        List<AbletonFileData> abletonFileList = new ArrayList<>();
-        for (MultipartFile multipartFile : multipartFiles) {
+    private void createDirectory(String filePath) throws Exception {
+        String dir = this.fileService.getFileDir(filePath);
+        runGitServerCommand("mkdir -p /home/git/brink/users/admin/projects/" + dir);
+    }
 
+    private AbletonFileData createAbletonFileData(MultipartFile multipartFile) throws Exception {
+        try {
             String filePath = multipartFile.getOriginalFilename();
-
             assert filePath != null;
             String extension = this.fileService.getFileExtension(filePath);
             String fileName = this.fileService.getFilename(filePath);
             String dir = this.fileService.getFileDir(filePath);
-            dir = dir.replace(" ", "\\ ");
             String path = dir + fileName;
 
 
-            runGitServerCommand("mkdir -p /home/git/brink/users/admin/projects/" + dir);
-
-
             AbletonFileData abletonFileData = new AbletonFileData();
+            File file = File.createTempFile(dir + fileName, extension);
+            multipartFile.transferTo(file);
 
-            try {
-                File file = File.createTempFile(dir + fileName, extension);
+            abletonFileData.setFile(file);
+            abletonFileData.setOriginalFilePath(filePath);
+            abletonFileData.setDirectory(dir);
+            abletonFileData.setName(fileName);
+            abletonFileData.setPath(path);
 
-                abletonFileData.setFile(file);
-                abletonFileData.setDirectory(dir);
-                abletonFileData.setName(fileName);
-                abletonFileData.setPath(path);
-                abletonFileList.add(abletonFileData);
-
-                multipartFile.transferTo(file);
-                file.deleteOnExit();
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
+            file.deleteOnExit();
+            return abletonFileData;
+        } catch (IOException e) {
+            throw new Exception(BrinkInternalErrors.WRITE_FILE_DATA);
         }
-        return abletonFileList;
     }
 
 
-    public void upload(List<MultipartFile> multipartFiles) throws Exception {
-        System.out.println("Files recieved - " + multipartFiles.size());
-        List<AbletonFileData> fileList = this.convertMultipartFilesToFiles(multipartFiles);
-        System.out.println("Files successfully converted");
-        for (AbletonFileData abletonFileData : fileList) {
+    public void uploadMultiPartFileList(List<MultipartFile> multipartFileList) throws Exception {
+        List<AbletonFileData> abletonFileDataList = new ArrayList<>();
+
+        String projectRootPath = "";
+
+        for (MultipartFile multipartFile : multipartFileList) {
+            abletonFileDataList.add(this.convertMultipartFile2AbletonFileData(multipartFile));
+
+        }
+
+
+        for (AbletonFileData abletonFileData : abletonFileDataList) {
             String path = "/home/git/brink/users/admin/projects/" + abletonFileData.getPath();
+
+            if (Objects.equals(projectRootPath, "")) {
+                projectRootPath = abletonFileData.getDirectory();
+            }
+
+            createDirectory(abletonFileData.getOriginalFilePath());
             sendFileToGitServer(abletonFileData.getFile(), path);
         }
-        System.out.println("Completed");
+        initRepository(GIT_PROJECTS_REPO + projectRootPath);
+
     }
 
 

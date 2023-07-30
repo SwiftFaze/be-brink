@@ -34,7 +34,7 @@ public class AbletonProjectController {
     }
 
     @PostMapping("/v1/projects/convert")
-    public ResponseEntity<AbletonProjectDto> convertAbletonProject(@RequestBody String xmlString) {
+    public ResponseEntity<AbletonProjectDto> convertAbletonProject(@RequestBody String xmlString) throws Exception {
         logger.info("POST convert Ableton Project");
         AbletonProjectDto abletonProjectDto = this.abletonProjectService.convert2AbletonProject(xmlString);
         return new ResponseEntity<>(abletonProjectDto, new HttpHeaders(), HttpStatus.OK);
@@ -42,9 +42,10 @@ public class AbletonProjectController {
 
 
     @PostMapping("/v1/projects/upload")
-    public ResponseEntity<Void> uploadFiles(MultipartHttpServletRequest request) throws Exception {
-        this.abletonProjectService.uploadFiles(request);
-
+    public ResponseEntity<Void> uploadProject(MultipartHttpServletRequest request) throws Exception {
+        logger.info("POST Upload user project");
+        this.abletonProjectService.upload(request);
+        logger.info("Files uploaded");
         return new ResponseEntity<>(new HttpHeaders(), HttpStatus.OK);
     }
 

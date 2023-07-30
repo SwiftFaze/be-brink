@@ -1,0 +1,4 @@
+
+Windows git command for project
+
+git clone "git@git:/home/git/brink/users/admin/projects/79 JOF4 Project/"

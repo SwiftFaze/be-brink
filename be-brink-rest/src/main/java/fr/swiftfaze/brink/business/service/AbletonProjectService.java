@@ -25,7 +25,7 @@ public class AbletonProjectService {
         this.gitService = gitService;
     }
 
-    public AbletonProjectDto convert2AbletonProject(String abletonXmlProjectFile) {
+    public AbletonProjectDto convert2AbletonProject(String abletonXmlProjectFile) throws Exception {
         return this.xmlService.convertXml2Object(abletonXmlProjectFile, AbletonProjectDto.class);
     }
 
@@ -43,16 +43,17 @@ public class AbletonProjectService {
         return projectNameList;
     }
 
-    public void uploadFiles(MultipartHttpServletRequest request) throws Exception {
+    public void upload(MultipartHttpServletRequest request) throws Exception {
         try {
             MultiValueMap<String, MultipartFile> multipartFilesMap = request.getMultiFileMap();
-            for (Map.Entry<String, List<MultipartFile>> entry : multipartFilesMap.entrySet()) {
-                List<MultipartFile> multipartFiles = entry.getValue();
-                this.gitService.upload(multipartFiles);
+            for (Map.Entry<String, List<MultipartFile>> multipartFileListMap : multipartFilesMap.entrySet()) {
+                this.gitService.uploadMultiPartFileList(multipartFileListMap.getValue());
             }
         } catch (Exception e) {
-            throw new Exception(BrinkInternalErrors.FILE_CREATION);
+            throw new Exception(BrinkInternalErrors.MULTIPART_FILE_MAP);
         }
+
+
     }
 
 

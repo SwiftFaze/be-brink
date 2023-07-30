@@ -13,7 +13,7 @@ public class AbletonPluginHandler extends XmlAdapter<Element, AbletonPlugin> {
     XmlService xmlService = new XmlService();
 
     @Override
-    public AbletonPlugin unmarshal(Element xml) {
+    public AbletonPlugin unmarshal(Element xml) throws Exception {
         AbletonPlugin abletonPlugin = this.setPluginGeneralInfo(xml);
 
         String pluginType = xml.getLocalName();
@@ -76,7 +76,7 @@ public class AbletonPluginHandler extends XmlAdapter<Element, AbletonPlugin> {
         abletonPlugin.setPath(pathName);
     }
 
-    private void setPluginChildren(AbletonPlugin abletonPlugin, Element xml) {
+    private void setPluginChildren(AbletonPlugin abletonPlugin, Element xml) throws Exception {
         Element rackElement = (Element) xml.getElementsByTagName("Branches").item(0);
         abletonPlugin.setRack(rackElement != null);
         if (rackElement != null) {

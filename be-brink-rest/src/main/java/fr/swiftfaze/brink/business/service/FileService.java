@@ -19,27 +19,36 @@ public class FileService {
 
 
     public String getFileExtension(String filename) {
-        int extensionIndex = filename.lastIndexOf(".");
-        if (extensionIndex != -1) {
-            return filename.substring(extensionIndex);
+        int index = filename.lastIndexOf(".");
+        if (index != -1) {
+            return filename.substring(index);
         }
         return "";
     }
 
     public String getFileDir(String path) {
-        int extensionIndex = path.lastIndexOf("/");
-        if (extensionIndex != -1) {
-            return path.substring(0, extensionIndex) + "/";
+        int index = path.lastIndexOf("/");
+        if (index != -1) {
+            String dir =  path.substring(0, index) + "/";
+            return dir.replace(" ", "\\ ");
         }
         return path;
     }
 
     public String getFilename(String filename) {
-        int extensionIndex = filename.lastIndexOf("/");
-        if (extensionIndex != -1) {
-            return filename.substring(extensionIndex + 1);
+        int index = filename.lastIndexOf("/");
+        if (index != -1) {
+            return filename.substring(index + 1);
         }
         return filename;
+    }
+
+    public String getRootDirectory(String filename) {
+        int index = filename.indexOf("/");
+        if (index != -1) {
+            return filename.substring(0, index) + "/";
+        }
+        return "";
     }
 
 
