@@ -1,6 +1,7 @@
 package fr.swiftfaze.brink.business.service;
 
 import fr.swiftfaze.brink.rest.dto.AbletonProjectDto;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
 
 import javax.xml.bind.JAXBContext;
@@ -15,6 +16,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+@Service
 public class XmlService {
 
     public <T> T convertXml2Object(String abletonXmlProjectFile, Class<T> conversionClass) {
@@ -27,7 +29,6 @@ public class XmlService {
         }
         return null;
     }
-
 
 
     public String getChildElementXmlString(Element xml, String tagName) {
