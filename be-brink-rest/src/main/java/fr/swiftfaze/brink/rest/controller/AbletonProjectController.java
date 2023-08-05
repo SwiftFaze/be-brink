@@ -2,18 +2,21 @@ package fr.swiftfaze.brink.rest.controller;
 
 import fr.swiftfaze.brink.business.service.AbletonProjectService;
 import fr.swiftfaze.brink.rest.dto.AbletonProjectDto;
+import io.opencensus.resource.Resource;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import java.net.MalformedURLException;
 import java.util.List;
 @RestController
 public class AbletonProjectController {
@@ -56,6 +59,22 @@ public class AbletonProjectController {
         List<String> projectNameList = this.abletonProjectService.getUserProjectList();
         return new ResponseEntity<>(projectNameList, new HttpHeaders(), HttpStatus.OK);
     }
+
+    @GetMapping("/v1/projects/download/{projectId}")
+    public ResponseEntity<ByteArrayResource> downloadProject(@PathVariable String projectId) throws Exception {
+        byte[] compressedBytes = this.abletonProjectService.getProject(projectId);
+
+        ByteArrayResource resource = new ByteArrayResource(compressedBytes);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", "project.zip"); // Change filename if needed
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(resource);
+    }
+
 
 
 }

@@ -5,16 +5,21 @@ import fr.swiftfaze.brink.business.model.AbletonFileData;
 import fr.swiftfaze.brink.exception.BrinkInternalErrors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Vector;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 public class GitService {
@@ -112,6 +117,62 @@ public class GitService {
             }
         }
     }
+
+    public byte[] downloadFolderAndCompress(String remoteFolderPath) throws Exception {
+        try {
+            JSch jsch = new JSch();
+            Session session = jsch.getSession(USERNAME, HOST, PORT);
+            session.setPassword(PASSWORD);
+            session.setConfig("StrictHostKeyChecking", "no");
+            session.connect();
+
+            Channel channel = session.openChannel("sftp");
+            channel.connect();
+
+            ChannelSftp sftpChannel = (ChannelSftp) channel;
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
+
+            addFilesToZip(sftpChannel, remoteFolderPath, "", zipOutputStream);
+
+            zipOutputStream.close();
+            sftpChannel.disconnect();
+            session.disconnect();
+
+            return byteArrayOutputStream.toByteArray();
+        } catch (Exception e) {
+            // Handle errors appropriately
+            throw new Exception("Error while downloading and compressing folder: " + e.getMessage());
+        }
+    }
+
+    private void addFilesToZip(ChannelSftp sftpChannel, String remoteFolderPath, String currentPath, ZipOutputStream zipOutputStream) throws Exception {
+        Vector<ChannelSftp.LsEntry> entries = sftpChannel.ls(remoteFolderPath);
+        for (ChannelSftp.LsEntry entry : entries) {
+            if (!entry.getFilename().equals(".") && !entry.getFilename().equals("..")) {
+                if (entry.getAttrs().isDir()) {
+                    String nestedPath = currentPath + entry.getFilename() + "/";
+                    addFilesToZip(sftpChannel, remoteFolderPath + "/" + entry.getFilename(), nestedPath, zipOutputStream);
+                } else {
+                    InputStream inputStream = sftpChannel.get(remoteFolderPath + "/" + entry.getFilename());
+                    ZipEntry zipEntry = new ZipEntry(currentPath + entry.getFilename());
+                    zipOutputStream.putNextEntry(zipEntry);
+
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        zipOutputStream.write(buffer, 0, bytesRead);
+                    }
+
+                    inputStream.close();
+                    zipOutputStream.closeEntry();
+                }
+            }
+        }
+    }
+
+
 
 //    public void stuff() {
 //                        Repository newlyCreatedRepo = FileRepositoryBuilder.create(
