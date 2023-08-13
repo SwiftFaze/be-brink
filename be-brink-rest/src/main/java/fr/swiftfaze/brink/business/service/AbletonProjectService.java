@@ -35,7 +35,7 @@ public class AbletonProjectService {
 
         while (response.contains("\n")) {
             int extensionIndex = response.lastIndexOf("\n");
-            projectNameList.add(response.substring(extensionIndex));
+            projectNameList.add(response.substring(extensionIndex).replace("\n", ""));
             response = response.substring(0, extensionIndex);
         }
         projectNameList.add(response);
