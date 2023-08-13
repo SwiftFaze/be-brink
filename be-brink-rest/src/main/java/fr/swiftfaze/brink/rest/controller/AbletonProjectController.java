@@ -68,7 +68,7 @@ public class AbletonProjectController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDispositionFormData("attachment", "project.zip"); // Change filename if needed
+        headers.setContentDispositionFormData("attachment", "hello.zip"); // Change filename if needed
 
         return ResponseEntity.ok()
                 .headers(headers)

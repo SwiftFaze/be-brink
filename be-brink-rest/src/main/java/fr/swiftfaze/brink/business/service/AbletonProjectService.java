@@ -58,8 +58,6 @@ public class AbletonProjectService {
 
 
     public byte[] getProject(String projectId) throws Exception {
-
-        return this.gitService.downloadFolderAndCompress("/home/git/brink/users/admin/projects/79\\ JOF4\\ Project/");
-
+        return this.gitService.downloadFolderAndCompress("/home/git/brink/users/admin/projects/79\\ JOF4\\ Project");
     }
 }

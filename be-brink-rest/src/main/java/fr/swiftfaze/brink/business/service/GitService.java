@@ -134,7 +134,9 @@ public class GitService {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
 
-            addFilesToZip(sftpChannel, remoteFolderPath, "", zipOutputStream);
+            String parentFolderName = extractFolderName(remoteFolderPath);
+            zipOutputStream.putNextEntry(new ZipEntry(parentFolderName + "/"));
+            addFilesToZip(sftpChannel, remoteFolderPath, parentFolderName + "/", zipOutputStream);
 
             zipOutputStream.close();
             sftpChannel.disconnect();
@@ -142,15 +144,20 @@ public class GitService {
 
             return byteArrayOutputStream.toByteArray();
         } catch (Exception e) {
-            // Handle errors appropriately
             throw new Exception("Error while downloading and compressing folder: " + e.getMessage());
         }
     }
 
+    public String extractFolderName(String path) {
+        int index = path.lastIndexOf('/');
+        return path.substring(index + 1).replace("\\", "");
+    }
+
+
     private void addFilesToZip(ChannelSftp sftpChannel, String remoteFolderPath, String currentPath, ZipOutputStream zipOutputStream) throws Exception {
         Vector<ChannelSftp.LsEntry> entries = sftpChannel.ls(remoteFolderPath);
         for (ChannelSftp.LsEntry entry : entries) {
-            if (!entry.getFilename().equals(".") && !entry.getFilename().equals("..")) {
+            if (!entry.getFilename().equals(".git") &&!entry.getFilename().equals(".") && !entry.getFilename().equals("..")) {
                 if (entry.getAttrs().isDir()) {
                     String nestedPath = currentPath + entry.getFilename() + "/";
                     addFilesToZip(sftpChannel, remoteFolderPath + "/" + entry.getFilename(), nestedPath, zipOutputStream);
@@ -171,7 +178,6 @@ public class GitService {
             }
         }
     }
-
 
 
 //    public void stuff() {
@@ -249,6 +255,7 @@ public class GitService {
         System.out.println("git -C " + path + "add .");
         System.out.println(runGitServerCommand("git -C " + path + " add ."));
     }
+
     public void init(String path) throws Exception {
         System.out.println(runGitServerCommand("git init " + path));
     }
