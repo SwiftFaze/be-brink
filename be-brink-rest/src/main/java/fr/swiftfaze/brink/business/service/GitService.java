@@ -5,11 +5,6 @@ import fr.swiftfaze.brink.business.model.AbletonFileData;
 import fr.swiftfaze.brink.exception.BrinkInternalErrors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -157,7 +152,7 @@ public class GitService {
     private void addFilesToZip(ChannelSftp sftpChannel, String remoteFolderPath, String currentPath, ZipOutputStream zipOutputStream) throws Exception {
         Vector<ChannelSftp.LsEntry> entries = sftpChannel.ls(remoteFolderPath);
         for (ChannelSftp.LsEntry entry : entries) {
-            if (!entry.getFilename().equals(".git") &&!entry.getFilename().equals(".") && !entry.getFilename().equals("..")) {
+            if (!entry.getFilename().equals(".git") && !entry.getFilename().equals(".") && !entry.getFilename().equals("..")) {
                 if (entry.getAttrs().isDir()) {
                     String nestedPath = currentPath + entry.getFilename() + "/";
                     addFilesToZip(sftpChannel, remoteFolderPath + "/" + entry.getFilename(), nestedPath, zipOutputStream);
@@ -258,6 +253,31 @@ public class GitService {
 
     public void init(String path) throws Exception {
         System.out.println(runGitServerCommand("git init " + path));
+        this.gitLfsInit(path);
+    }
+
+    public void gitLfsInit(String path) throws Exception {
+        System.out.println(runGitServerCommand("git lfs install " + path));
+        this.gitLfsTrackAllAudioTypes(path);
+    }
+
+    public void gitLfsTrack(String path, String extensionType) throws Exception {
+        runGitServerCommand("echo \"*." + extensionType + " filter=lfs diff=lfs merge=lfs -text\" >> " + path + ".gitattributes");
+    }
+
+    public void gitLfsTrackAllAudioTypes(String path) throws Exception {
+        this.gitLfsTrack(path, "wav");
+        this.gitLfsTrack(path, "mp3");
+        this.gitLfsTrack(path, "flac");
+        this.gitLfsTrack(path, "ogg");
+        this.gitLfsTrack(path, "aac");
+        this.gitLfsTrack(path, "m4a");
+        this.gitLfsTrack(path, "wma");
+        this.gitLfsTrack(path, "aiff");
+        this.gitLfsTrack(path, "au");
+        this.gitLfsTrack(path, "mid");
+        this.gitLfsTrack(path, "amr");
+        this.gitLfsTrack(path, "opus");
     }
 
 

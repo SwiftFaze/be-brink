@@ -2,3 +2,42 @@
 Windows git command for project
 
 git clone "git@git:/home/git/brink/users/admin/projects/79 JOF4 Project/"
+
+
+git lfs track
+git lfs install
+
+
+
+git lfs install /home/git/brink/users/admin/projects/'hti745 Project'
+
+git lfs track "*.wav" || cd /home/git/brink/users/admin/projects/test/
+
+git lfs track "/home/git/brink/users/admin/projects/hti745\ Project/*.wav"
+git lfs track "/home/git/brink/users/admin/projects/hti745 Project/*.wav"
+
+
+nano > *.wav filter=lfs diff=lfs merge=lfs -text
+
+
+echo "*.wav filter=lfs diff=lfs merge=lfs -text" | nano .gitattributes
+
+git config --global lfs.url "192.168.1.29"
+
+
+
+git lfs track "/home/git/brink/users/admin/projects/test/*.wav"
+/home/git/brink/users/admin/projects/'hti745 Project'
+
+
+
+git config --global init.defaultBranch master
+
+
+git config --global filter.lfs.clean 'git-lfs clean -- %f'
+git config --global filter.lfs.process 'git-lfs filter-process'
+git config --global filter.lfs.required 'true'
+git config --global filter.lfs.smudge 'git-lfs smudge -- %f'
+
+
+
